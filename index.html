@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnlyPro - Fortnite Draft Server</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Syne:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; }
+
+        body {
+            font-family: 'Space Grotesk', 'Syne', 'Segoe UI', sans-serif;
+            color: #e5e7eb;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 40px 16px 80px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-color: #0f0f14;
+            animation: bg-pulse 6s ease-in-out infinite;
+        }
+
+        .bounce150 {
+            animation: bounce150 0.4s ease-in-out infinite;
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        .blurred { filter: blur(14px); transition: filter 0.35s ease; }
+
+        .wrap {
+            text-align: center;
+            display: grid;
+            gap: 18px;
+            position: relative;
+        }
+
+        .tagline {
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            letter-spacing: -0.02em;
+            text-transform: lowercase;
+            color: #f8fafc;
+        }
+
+        .logo-link {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.45);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .logo-link:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 38px 140px rgba(0, 0, 0, 0.55); }
+        .logo-link:active { transform: translateY(-2px) scale(1.01); }
+
+        .logo {
+            max-width: min(420px, 72vw);
+            height: auto;
+            transition: transform 0.8s ease;
+            transform-origin: center;
+        }
+
+        .logo-link:hover .logo { transform: rotate(360deg); }
+
+        .socials { display: grid; gap: 10px; justify-content: center; }
+
+        .social {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 1rem;
+            opacity: 0.85;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        .social:hover { opacity: 1; transform: translateY(-1px); }
+
+        .social svg {
+            width: 30px;
+            height: 30px;
+            fill: currentColor;
+        }
+
+        .corner-sob {
+            font-size: 5rem;
+            animation: spin-sob 2s linear infinite;
+            filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+        }
+
+        @keyframes spin-sob {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .top-badge {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: grid;
+            justify-items: center;
+            gap: 6px;
+            z-index: 2;
+        }
+
+        .top-badge .emoji { font-size: 1.2rem; }
+
+        .badge-img {
+            max-width: 200px;
+            width: 32vw;
+            height: auto;
+            filter: drop-shadow(0 12px 40px rgba(0,0,0,0.45));
+        }
+
+        .side-img {
+            position: fixed;
+            z-index: 1;
+            max-width: 240px;
+            width: 22vw;
+            height: auto;
+            opacity: 0.95;
+            pointer-events: none;
+            border-radius: 28px;
+        }
+
+        .side-img.left { left: 90px; top: 50%; transform: translateY(-50%); }
+
+        .side-wrap.left { left: 90px; top: 50%; transform: translateY(-50%); }
+
+        .side-wrap {
+            position: fixed;
+            z-index: 1;
+            display: grid;
+            justify-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .side-wrap.right-top { right: 70px; top: 26%; }
+        .side-wrap.right-bottom { right: 70px; top: 52%; }
+
+        .side-wrap .side-img { position: static; transform: none; }
+
+        .side-label {
+            color: #e5e7eb;
+            font-size: 0.95rem;
+            text-transform: lowercase;
+            letter-spacing: 0.03em;
+            opacity: 0.9;
+        }
+
+        .marquee {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 0;
+            z-index: 10;
+            transform: translateZ(0);
+        }
+
+        .marquee-inner {
+            display: flex;
+            gap: 28px;
+            animation: scroll-left 18s linear infinite;
+            white-space: nowrap;
+            color: #94a3b8;
+            font-size: 1rem;
+            letter-spacing: 0.04em;
+        }
+
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes bounce150 {
+            0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+            35% { transform: translate3d(0, -2px, 0) scale(1.005); }
+            70% { transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        @keyframes bg-pulse {
+            0%, 100% { background-color: #0f0f14; }
+            16% { background-color: #1a1428; }
+            33% { background-color: #141d2b; }
+            50% { background-color: #1c1a30; }
+            66% { background-color: #162030; }
+            83% { background-color: #18141e; }
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.78);
+            backdrop-filter: blur(14px);
+            display: grid;
+            place-items: center;
+            z-index: 5;
+        }
+
+        .enter-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 26px 28px;
+            border-radius: 20px;
+            text-align: center;
+            color: #f8fafc;
+            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.45);
+        }
+
+        .enter-title { font-size: 1.1rem; letter-spacing: 0.02em; margin-bottom: 14px; }
+
+        .enter-btn {
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            color: #030712;
+            font-weight: 800;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.98rem;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
+            box-shadow: 0 16px 50px rgba(59, 130, 246, 0.28);
+        }
+
+        .enter-btn:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(59, 130, 246, 0.36); }
+        .enter-btn:active { transform: translateY(0); }
+
+        @media (max-width: 540px) {
+            body { padding: 32px 14px; }
+            .logo-link { padding: 18px; border-radius: 20px; }
+            .side-img.left { left: 18px; width: 36vw; }
+            .side-img.right-top, .side-img.right-bottom { right: 18px; width: 36vw; }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay">
+        <div class="enter-card">
+            <div class="enter-title">click to enter</div>
+            <button class="enter-btn" id="enterBtn">enter</button>
+        </div>
+    </div>
+    <div id="page" class="blurred">
+        <div class="top-badge">
+            <div class="emoji">😭😭😭</div>
+            <img src="active.png" alt="Active" class="badge-img">
+        </div>
+        <div class="side-wrap left">
+            <div class="corner-sob">😭</div>
+            <img class="side-img" src="server.png" alt="Server">
+            <div class="side-label">join bro 🤣</div>
+        </div>
+        <div class="side-wrap right-top">
+            <img class="side-img" src="lard.png" alt="Lard">
+            <div class="side-label">dev, owner</div>
+        </div>
+        <div class="side-wrap right-bottom">
+            <img class="side-img" src="tae.png" alt="Tae">
+            <div class="side-label">map creator, owner</div>
+        </div>
+        <div class="wrap">
+        <div class="tagline">drafts. active vcs. money. join now.</div>
+        <a class="logo-link" href="https://discord.gg/onlypro" target="_blank" rel="noreferrer">
+            <img class="logo" src="onlypro.png" alt="OnlyPro logo">
+        </a>
+        <div class="socials">
+            <a class="social" href="https://x.com/lardisdaddy" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4.5 3h4.3l3.1 4.5 3.4-4.5H21l-6 7.6L21.5 21h-4.3l-3.4-4.9-3.8 4.9H3l6.6-8.2L4.5 3zm2.7 1.4 3.1 4.6L6.2 19.6h2.4l4.1-5.3 3.7 5.3h1.9l-3.9-5.8L18.9 4.4h-2.4l-3.7 4.8-3.3-4.8H7.2z" />
+                </svg>
+                <span>@lardisdaddy</span>
+            </a>
+            <a class="social" href="https://www.tiktok.com/@tae1xgg" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M17.1 4.1c.6 1.1 1.5 2 2.6 2.6.6.3 1.2.5 1.8.6v3.2c-.7 0-1.4-.1-2.1-.3-.7-.2-1.3-.5-1.9-.9v5.6c0 3.8-3.1 6.1-6.1 6.1-1 0-2-.3-2.9-.8-1.8-1.1-2.9-3-2.9-5 0-3.3 2.7-6 6-6 .3 0 .6 0 .9.1v3.3c-.3-.1-.6-.1-.9-.1-1.4 0-2.6 1.2-2.6 2.7 0 .9.5 1.7 1.2 2.1.4.2.9.4 1.4.4 1.4 0 2.6-1.1 2.7-2.7V3h3.8c.1.4.3.8.5 1.1z"/>
+                </svg>
+                <span>@tae1xgg</span>
+            </a>
+        </div>
+        </div>
+    </div>
+    <div class="marquee">
+        <div class="marquee-inner">
+            <span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span><span>/onlypro 😭</span>
+        </div>
+    </div>
+    <audio id="bgm" src="music.mp3" autoplay loop></audio>
+    <script>
+        (function() {
+            const overlay = document.getElementById('overlay');
+            const btn = document.getElementById('enterBtn');
+            const audio = document.getElementById('bgm');
+            const page = document.getElementById('page');
+            if (!btn || !overlay || !audio) return;
+
+            const start = () => {
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                setTimeout(() => overlay.remove(), 300);
+                audio.currentTime = 16;
+                audio.play().catch(() => {});
+                page && page.classList.remove('blurred');
+
+                const bounceTargets = document.querySelectorAll(
+                    '#page .top-badge .emoji, #page .top-badge .badge-img, #page .wrap, #page .tagline, #page .socials, #page .social, #page .side-img, #page .side-label'
+                );
+                bounceTargets.forEach((el) => {
+                    el.classList.add('bounce150');
+                    el.style.animationDelay = `${Math.random() * 0.4}s`;
+                });
+            };
+
+            btn.addEventListener('click', start, { once: true });
+        })();
+    </script>
+</body>
+</html>
